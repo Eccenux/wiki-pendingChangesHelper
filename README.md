@@ -1,12 +1,19 @@
-# UserScript: pendingChangesHelper
+# Wiki Pending Changes Helper
 
-Skrypt pomocniczy do przeglądania ostatnich zmian.
+Pomocnik przeglądania artykułów Wikipedii. Otwiera pierwsze 5 stron do przejrzenia i potem kolejne 5. Na stronie z wkładem użytkownika(-czki) stara się otworzyć unikatowe strony.
+
+Działa na stronach:
+1. Wkład -- tutaj otwierane są nieprzejrzane strony. Skrypt magicznie pomija duplikaty jeśli dany użytkownik zrobił więcej niż jedną edycję. Ustala również szybko wszystkie edycje, które są do przejrzenia.
+2. PendingChanges, czyli Strony ze zmianami oczekującymi na przejrzenie.
+2. Nowe strony. 
 
 Instalacja
 ----------
 
 1. Zainstaluj [TamperMonkey](https://addons.mozilla.org/pl/firefox/addon/tampermonkey/) (jeśli jeszcze nie masz).
 2. Jak już masz TM &rarr; **[zainstaluj skrypt](https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.user.js)**.
+
+Skrypt jest testowany głównie w Firefox, ale powinien działać również Chrome, Microsoft Edge, Safari, Opera Next. Zobacz więcej na witrynie: [www.tampermonkey.net](https://www.tampermonkey.net/). 
 
 Licencja i autorzy
 ----------------------------
