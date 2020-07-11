@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.0.1
-// @description  [0.0.1] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.1.0
+// @description  [0.1.0] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -122,21 +122,47 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 			if (!listItems.length) {
 				return;
 			}
-			var uniques = {};
-			[...listItems].some((item) => {
+			// find unique URLs (title.href -> diff.href)
+			const uniques = {};
+			let lastIndex = -1;
+			for (let index = 0; index < listItems.length; index++) {
+				const item = listItems[index];
+				lastIndex = index;
 				if (this.wasVisited(item)) {
-					return;
+					continue;
 				}
-				var id = item.querySelector('.mw-contributions-title').href;
-				var oid = item.getAttribute('data-mw-revid');
-				var diff = item.querySelector('.mw-changeslist-diff').href;
+				let id = item.querySelector('.mw-contributions-title').href;
+				//var oid = item.getAttribute('data-mw-revid');
+				let diff = item.querySelector('.mw-changeslist-diff').href;
+				if (id in uniques) {
+					console.log('already there');
+				} else {
+					console.log('new page:\n' + id);
+				}
 				uniques[id] = diff;
+
 				this.markAsVisited(item);
 				if (Object.keys(uniques).length >= this.limit) {
 					console.log('limit reached');
-					return true;
+					break;
 				}
-			});
+			}
+
+			// mark found to the end of the list
+			for (let index = lastIndex + 1; index < listItems.length; index++) {
+				const item = listItems[index];
+				lastIndex = index;
+				if (this.wasVisited(item)) {
+					continue;
+				}
+				let id = item.querySelector('.mw-contributions-title').href;
+				if (id in uniques) {
+					console.log('in uniques:\n' + id);
+					this.markAsVisited(item);
+				}
+			}
+
+			// open found
 			this.openDiffs(uniques);
 
 			return Object.keys(uniques).length > 0;
@@ -172,6 +198,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 				);
 			}
 
+			// open found URLs
 			for (var i = 0; i < reviewUrls.length; i++) {
 				let url = reviewUrls[i];
 				//console.log(url);
