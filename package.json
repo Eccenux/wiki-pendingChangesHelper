@@ -1,0 +1,22 @@
+{
+  "name": "wiki-pendingchangeshelper",
+  "version": "1.0.0",
+  "description": "Wiki Pending Changes Helper",
+  "main": "pendingChangesHelper.user.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eccenux/wiki-pendingChangesHelper.git"
+  },
+  "author": "Maciej Nux Jaros",
+  "license": "SEE LICENSE IN README.md",
+  "bugs": {
+    "url": "https://github.com/Eccenux/wiki-pendingChangesHelper/issues"
+  },
+  "homepage": "https://github.com/Eccenux/wiki-pendingChangesHelper#readme",
+  "devDependencies": {
+    "eslint": "7.4.0"
+  }
+}
