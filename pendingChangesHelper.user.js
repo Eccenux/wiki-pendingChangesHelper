@@ -134,16 +134,10 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 				let id = item.querySelector('.mw-contributions-title').href;
 				//var oid = item.getAttribute('data-mw-revid');
 				let diff = item.querySelector('.mw-changeslist-diff').href;
-				if (id in uniques) {
-					console.log('already there');
-				} else {
-					console.log('new page:\n' + id);
-				}
 				uniques[id] = diff;
 
 				this.markAsVisited(item);
 				if (Object.keys(uniques).length >= this.limit) {
-					console.log('limit reached');
 					break;
 				}
 			}
@@ -157,7 +151,6 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 				}
 				let id = item.querySelector('.mw-contributions-title').href;
 				if (id in uniques) {
-					console.log('in uniques:\n' + id);
 					this.markAsVisited(item);
 				}
 			}
