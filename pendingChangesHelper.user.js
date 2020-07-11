@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.0.0
-// @description  [0.0.0] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.0.1
+// @description  [0.0.1] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -10,144 +10,261 @@
 // @downloadURL  https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.user.js
 // ==/UserScript==
 
-window.pendingChangesGadget = {
-	version: 4,
-	limit: 10,
-	openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
+window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
+	// wrapper start
 
-	init: function() {
-		var that = this;
+	console.log('pendingChangesGadget');
 
-		if ( mw.config.get( 'wgCanonicalSpecialPageName' ) != "PendingChanges" && mw.config.get( 'wgCanonicalSpecialPageName' ) != "Newpages") {
-			return;
-		}
+	var pendingChangesGadget = {
+		version: 4,
+		limit: 5,
+		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
+		allDoneInfo: 'Koniec 😎',
+		specialPage: '',
 
-		var list = this.getList();
-		if ( !list )
-			return;
+		/**
+		 * Main init.
+		 */
+		init: function () {
+			var specialPage = mw.config.get('wgCanonicalSpecialPageName');
+			if (!specialPage) {
+				return;
+			}
+			if (
+				specialPage != 'PendingChanges' &&
+				specialPage != 'Newpages' &&
+				specialPage != 'Contributions'
+			) {
+				return;
+			}
+			this.specialPage = specialPage;
 
-		var callback = function() {
-			that.openPages();
-			return false;
-		};
+			this.createButton();
+		},
 
-		var caption = this.openCaption.replace("$number", this.limit);
+		/**
+		 * Create main action button.
+		 */
+		createButton: function () {
+			var list = this.getList();
+			if (!list) {
+				return;
+			}
 
-		mw.util.addPortletLink('p-cactions', '#', caption, 'portlet-open-ten-pages');
-		var portlet = document.getElementById('portlet-open-ten-pages');
-		if ( portlet ) {
-			portlet.onclick = callback;
-		}
+			var callback = () => {
+				this.openPages();
+				return false;
+			};
 
-		var a = document.createElement('a');
-		a.style.fontWeight = 'bold';
-		a.href = '#';
-		a.onclick = callback;
-		a.appendChild(document.createTextNode(caption));
+			var caption = this.openCaption.replace('$number', this.limit);
 
-		var p = document.createElement('p');
-		p.appendChild(a);
+			mw.util.addPortletLink(
+				'p-cactions',
+				'#',
+				caption,
+				'portlet-open-ten-pages'
+			);
+			var portlet = document.getElementById('portlet-open-ten-pages');
+			if (portlet) {
+				portlet.onclick = callback;
+			}
 
-		list.parentNode.insertBefore(p, list);
-	},
+			var a = document.createElement('a');
+			a.style.fontWeight = 'bold';
+			a.href = '#';
+			a.onclick = callback;
+			a.appendChild(document.createTextNode(caption));
 
-	getList: function() {		
-		var bodyContent = document.getElementById('mw-content-text');
-		if (!bodyContent)
-			return null;
+			var p = document.createElement('p');
+			p.appendChild(a);
 
-		var list = bodyContent.getElementsByTagName('ul');
-		if (list.length < 1)
-			return null;
+			list.parentNode.insertBefore(p, list);
+		},
 
-		return list[0];
-	},
+		/**
+		 * List items container.
+		 * @return null when list was not found.
+		 */
+		getList: function () {
+			var list = document.querySelector('#mw-content-text ul');
+			return list;
+		},
 
-	getListItems: function() {
-		var list = this.getList();
-		if (!list)
-			return [];
+		/**
+		 * Main button action.
+		 */
+		openPages: function () {
+			var didSome = true;
+			switch (this.specialPage) {
+				case 'PendingChanges':
+					didSome = this.openPendingChanges();
+					break;
+				case 'Newpages':
+					didSome = this.openNewPages();
+					break;
+				case 'Contributions':
+					didSome = this.openContributions();
+					break;
+				default:
+					console.warn('Unsupported page');
+					break;
+			}
+			if (!didSome) {
+				alert(this.allDoneInfo);
+			}
+		},
 
-		return list.getElementsByTagName('li');
-	},
+		/**
+		 * Special:Contributions
+		 */
+		openContributions: function () {
+			var listItems = document.querySelectorAll('li.flaggedrevs-pending');
+			if (!listItems.length) {
+				return;
+			}
+			var uniques = {};
+			[...listItems].some((item) => {
+				if (this.wasVisited(item)) {
+					return;
+				}
+				var id = item.querySelector('.mw-contributions-title').href;
+				var oid = item.getAttribute('data-mw-revid');
+				var diff = item.querySelector('.mw-changeslist-diff').href;
+				uniques[id] = diff;
+				this.markAsVisited(item);
+				if (Object.keys(uniques).length >= this.limit) {
+					console.log('limit reached');
+					return true;
+				}
+			});
+			this.openDiffs(uniques);
 
-	openPages: function() {
-		if ( mw.config.get( 'wgCanonicalSpecialPageName' ) == "PendingChanges" ) {
-			this.openPendingChanges();
-		}
-		else {
-			this.openNewPages();
-		}
-	},
+			return Object.keys(uniques).length > 0;
+		},
+		/**
+		 * Open generic diff urls as las-flagged diff.
+		 * @param urls Url map (keys not important).
+		 */
+		openDiffs: async function (urls) {
+			// resolve URLs from the MW API.
+			const reviewUrls = [];
+			for (const i in urls) {
+				if (!urls.hasOwnProperty(i)) {
+					continue;
+				}
+				let url = urls[i];
 
-	openNewPages: function() {
-		var listItems = this.getListItems();
-		if (!listItems.length)
-			return;
+				// get stable revision id
+				let title = url.replace(/.+[?&]title=([^&]+).*/, '$1');
+				let data = await fetch(
+					`/w/api.php?action=query&prop=info%7Cflagged&titles=${title}&format=json`
+				);
+				//var json = await data.json();
+				let text = await data.text();
+				let oid = -1;
+				text.replace(/\"stable_revid\":(\d+)/, (a, rev) => {
+					oid = rev;
+				});
 
-		var i = 0;
-		var done = 0;
+				// push
+				reviewUrls.push(
+					`/w/index.php?title=${title}&diff=cur&oldid=${oid}`
+				);
+			}
 
-		while (i < listItems.length && done < this.limit) {
-			var item = listItems[i];
-			i++;
+			for (var i = 0; i < reviewUrls.length; i++) {
+				let url = reviewUrls[i];
+				//console.log(url);
+				window.open(url);
+			}
+		},
 
-			if (this.wasVisited(item))
-				continue;
+		/**
+		 * Special:Newpages
+		 */
+		openNewPages: function () {
+			var listItems = this.getList().querySelectorAll('li');
+			if (!listItems.length) return;
 
-			if (!jQuery(item).hasClass('not-patrolled'))
-				continue;
+			var i = 0;
+			var done = 0;
 
-			var link = jQuery(item).children('a.mw-newpages-pagename');
+			while (i < listItems.length && done < this.limit) {
+				var item = listItems[i];
+				i++;
 
-			if (!link.length)
-				continue;
+				if (this.wasVisited(item)) continue;
 
-			window.open(link[0].href)
-			this.markAsVisited(item);
+				if (!jQuery(item).hasClass('not-patrolled')) continue;
 
-			done++;
-		}
-	},
+				var link = jQuery(item).children('a.mw-newpages-pagename');
 
-	openPendingChanges: function() {
-		var listItems = this.getListItems();
-		if (!listItems.length)
-			return;
+				if (!link.length) continue;
 
-		var i = 0;
-		var done = 0;
+				window.open(link[0].href);
+				this.markAsVisited(item);
 
-		while (i < listItems.length && done < this.limit) {
-			var item = listItems[i];
-			i++;
+				done++;
+			}
+			return done > 0;
+		},
 
-			if (this.wasVisited(item))
-				continue;
+		/**
+		 * Special:PendingChanges
+		 */
+		openPendingChanges: function () {
+			var listItems = this.getList().querySelectorAll('li');
+			if (!listItems.length) return;
 
-			if (jQuery(item).children('span.fr-under-review').length)
-				continue;
+			var i = 0;
+			var done = 0;
 
-			var links = item.getElementsByTagName('a');
-			if(links.length < 3)
-				continue;
+			while (i < listItems.length && done < this.limit) {
+				var item = listItems[i];
+				i++;
 
-			window.open(links[2].href);
-			this.markAsVisited(item);
+				if (this.wasVisited(item)) continue;
 
-			done++;
-		}
-	},
+				if (jQuery(item).children('span.fr-under-review').length)
+					continue;
 
-	markAsVisited: function(item) {
-		item.style.backgroundColor = 'orange';
-	},
+				var links = item.getElementsByTagName('a');
+				if (links.length < 3) continue;
 
-	wasVisited: function(item) {
-		return item.style.backgroundColor != '';
-	}
+				window.open(links[2].href);
+				this.markAsVisited(item);
+
+				done++;
+			}
+			return done > 0;
+		},
+
+		markAsVisited: function (item) {
+			item.style.backgroundColor = 'orange';
+			item.classList.add('visited');
+		},
+
+		wasVisited: function (item) {
+			return item.classList.contains('visited');
+		},
+	};
+
+	jQuery(document).ready(function () {
+		pendingChangesGadget.init();
+	});
+
+	// wrapper end
 };
-
-jQuery(document).ready(function() {
-	pendingChangesGadget.init()
-});
+// inject code into site context
+var script = document.createElement('script');
+script.appendChild(
+	document.createTextNode(`
+		// timeout because jQuery is not always ready
+		setTimeout(() => {
+			nuxPendingChangesGadgetWrapper(mw, jQuery);
+		}, 1000);
+	`)
+);
+(document.body || document.head || document.documentElement).appendChild(
+	script
+);

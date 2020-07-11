@@ -3,9 +3,9 @@
 Pomocnik przeglądania artykułów Wikipedii. Otwiera pierwsze 5 stron do przejrzenia i potem kolejne 5. Na stronie z wkładem użytkownika(-czki) stara się otworzyć unikatowe strony.
 
 Działa na stronach:
-1. Wkład -- tutaj otwierane są nieprzejrzane strony. Skrypt magicznie pomija duplikaty jeśli dany użytkownik zrobił więcej niż jedną edycję. Ustala również szybko wszystkie edycje, które są do przejrzenia.
-2. PendingChanges, czyli Strony ze zmianami oczekującymi na przejrzenie.
-2. Nowe strony. 
+1. Wkład (Special:Contributions) -- tutaj otwierane są nieprzejrzane strony. Skrypt magicznie pomija duplikaty jeśli dany użytkownik zrobił więcej niż jedną edycję. Ustala również szybko wszystkie edycje, które są do przejrzenia.
+2. Strony ze zmianami oczekującymi na przejrzenie (Special:PendingChanges).
+2. Nowe strony (Special:Newpages).
 
 Instalacja
 ----------
