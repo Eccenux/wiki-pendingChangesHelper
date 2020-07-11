@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @name         Pending Changes Helper
+// @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
 // @version      0.0.0
 // @description  [0.0.0] Pomocnik do przeglądania strona na Wikipedii.
