@@ -282,6 +282,13 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 			var listItems = this.getList().querySelectorAll('li');
 			if (!listItems.length) return;
 
+			return this.openPendingItems(listItems);
+		},
+
+		/**
+		 * Open items from PendingChanges.
+		 */
+		openPendingItems: function (listItems) {
 			var i = 0;
 			var done = 0;
 
@@ -303,6 +310,16 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 				done++;
 			}
 			return done > 0;
+		},
+
+		/**
+		 * Special:PendingChanges - Unwatched
+		 */
+		openUnwatchedPages: function () {
+			var listItems = this.getList().querySelectorAll('li.fr-unreviewed-unwatched');
+			if (!listItems.length) return;
+
+			return this.openPendingItems(listItems);
 		},
 
 		markAsVisited: function (item) {
