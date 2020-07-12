@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.1.0
-// @description  [0.1.0] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.1.1
+// @description  [0.1.1] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -19,6 +19,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 		version: 4,
 		limit: 5,
 		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
+		openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
 		allDoneInfo: 'Koniec 😎',
 		specialPage: '',
 
@@ -39,18 +40,32 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 			}
 			this.specialPage = specialPage;
 
-			this.createButton();
+			this.createActions();
 		},
 
 		/**
-		 * Create main action button.
+		 * Create actions.
 		 */
-		createButton: function () {
+		createActions: function () {
 			var list = this.getList();
 			if (!list) {
 				return;
 			}
+			var p = document.createElement('p');
 
+			this.createMainButton(p);
+			if (this.specialPage == 'PendingChanges') {
+				p.appendChild(document.createTextNode(' • '));
+				this.createUnwatchedButton(p);
+			}
+			list.parentNode.insertBefore(p, list);
+		},
+
+		/**
+		 * Create main action button.
+		 * @param {Element} container Container to which the button is to be added.
+		 */
+		createMainButton: function (container) {
 			var callback = () => {
 				this.openPages();
 				return false;
@@ -58,27 +73,58 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 
 			var caption = this.openCaption.replace('$number', this.limit);
 
+			this.createPortletButton(caption, 'portlet-open-ten-pages', callback);
+			this.createButton(caption, container, callback);
+		},
+
+		/**
+		 * Generic Action Portlet.
+		 * @param {String} caption Label.
+		 * @param {String} portletId Uniqued ID.
+		 * @param {Function} callback Click action.
+		 */
+		createPortletButton: function (caption, portletId, callback) {
 			mw.util.addPortletLink(
 				'p-cactions',
 				'#',
 				caption,
-				'portlet-open-ten-pages'
+				portletId
 			);
-			var portlet = document.getElementById('portlet-open-ten-pages');
+			var portlet = document.getElementById(portletId);
 			if (portlet) {
 				portlet.onclick = callback;
 			}
+		},
 
+		/**
+		 * Generic List Button.
+		 * @param {String} caption Label.
+		 * @param {Element} container Container to which the button is to be added.
+		 * @param {Function} callback Click action.
+		 */
+		createButton: function (caption, container, callback) {
 			var a = document.createElement('a');
 			a.style.fontWeight = 'bold';
 			a.href = '#';
 			a.onclick = callback;
 			a.appendChild(document.createTextNode(caption));
 
-			var p = document.createElement('p');
-			p.appendChild(a);
+			container.appendChild(a);
+		},
 
-			list.parentNode.insertBefore(p, list);
+		/**
+		 * Create unwatched items button.
+		 * @param {Element} container Container to which the button is to be added.
+		 */
+		createUnwatchedButton: function (list) {
+			var callback = () => {
+				this.openUnwatchedPages();
+				return false;
+			};
+
+			var caption = this.openUnwatchedCaption.replace('$number', this.limit);
+
+			this.createButton(caption, list, callback);
 		},
 
 		/**
