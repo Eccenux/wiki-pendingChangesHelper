@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.2.1
-// @description  [0.2.1] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.2.2
+// @description  [0.2.2] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -321,10 +321,13 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 		 * Special:PendingChanges - Unwatched
 		 */
 		openUnwatchedPages: function () {
-			var listItems = this.hasUnwatchedPages();
-			if (!listItems) return;
+			var listItems = this.getList().querySelectorAll('li.fr-unreviewed-unwatched:not(.visited)');
+			if (!listItems.length) {
+				alert(this.allDoneInfo);
+				return;
+			}
 
-			return this.openPendingItems(listItems);
+			this.openPendingItems(listItems);
 		},
 
 		markAsVisited: function (item) {
