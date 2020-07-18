@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.2.2
-// @description  [0.2.2] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.2.3
+// @description  [0.2.3] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -57,10 +57,11 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 			if (this.specialPage == 'PendingChanges' && this.hasUnwatchedPages()) {
 				p.appendChild(document.createTextNode(' • '));
 				this.createUnwatchedButton(p);
+			} else if (this.specialPage == 'Contributions' && !this.hasPendingContributions()) {
+				p.style.textDecoration = 'line-through';
 			}
 			list.parentNode.insertBefore(p, list);
 		},
-
 		/**
 		 * Create main action button.
 		 * @param {Element} container Container to which the button is to be added.
@@ -160,11 +161,18 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 			}
 		},
 
+		hasPendingContributions: function () {
+			var listItems = document.querySelectorAll('li.flaggedrevs-pending');
+			if (!listItems.length) {
+				return false;
+			}
+			return true;
+		},
 		/**
 		 * Special:Contributions
 		 */
 		openContributions: function () {
-			var listItems = document.querySelectorAll('li.flaggedrevs-pending');
+			var listItems = document.querySelectorAll('li.flaggedrevs-pending:not(.visited)');
 			if (!listItems.length) {
 				return;
 			}
