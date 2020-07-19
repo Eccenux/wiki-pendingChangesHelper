@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.2.3
-// @description  [0.2.3] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.3.0
+// @description  [0.3.0] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -34,7 +34,8 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 			if (
 				specialPage != 'PendingChanges' &&
 				specialPage != 'Newpages' &&
-				specialPage != 'Contributions'
+				specialPage != 'Contributions' &&
+				specialPage != 'Watchlist'
 			) {
 				return;
 			}
@@ -47,19 +48,26 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 		 * Create actions.
 		 */
 		createActions: function () {
-			var list = this.getList();
+			var list;
+			if (this.specialPage != 'Watchlist') {
+				list = this.getList();
+			} else {
+				list = document.querySelector('.mw-changeslist ul');
+			}
 			if (!list) {
 				return;
 			}
 			var p = document.createElement('p');
 
 			this.createMainButton(p);
+
 			if (this.specialPage == 'PendingChanges' && this.hasUnwatchedPages()) {
 				p.appendChild(document.createTextNode(' • '));
 				this.createUnwatchedButton(p);
 			} else if (this.specialPage == 'Contributions' && !this.hasPendingContributions()) {
 				p.style.textDecoration = 'line-through';
 			}
+
 			list.parentNode.insertBefore(p, list);
 		},
 		/**
@@ -152,6 +160,9 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 				case 'Contributions':
 					didSome = this.openContributions();
 					break;
+				case 'Watchlist':
+					didSome = this.openWatchedPages();
+					break;
 				default:
 					console.warn('Unsupported page');
 					break;
@@ -235,7 +246,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 				//var json = await data.json();
 				let text = await data.text();
 				let oid = -1;
-				text.replace(/\"stable_revid\":(\d+)/, (a, rev) => {
+				text.replace(/"stable_revid":(\d+)/, (a, rev) => {
 					oid = rev;
 				});
 
@@ -336,6 +347,32 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 			}
 
 			this.openPendingItems(listItems);
+		},
+		/**
+		 * Special:Watchlist
+		 */
+		openWatchedPages: function () {
+			var listItems = document.querySelectorAll('.mw-changeslist-need-review:not(.visited)');
+			if (!listItems.length) {
+				return false;
+			}
+
+			var i = 0;
+			var done = 0;
+			while (i < listItems.length && done < this.limit) {
+				var item = listItems[i];
+				i++;
+
+				if (this.wasVisited(item)) continue;
+
+				var link = item.querySelector('.mw-fr-reviewlink a');
+
+				window.open(link.href);
+				this.markAsVisited(item);
+
+				done++;
+			}
+			return done > 0;
 		},
 
 		markAsVisited: function (item) {
