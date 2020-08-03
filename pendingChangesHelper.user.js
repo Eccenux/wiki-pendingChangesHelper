@@ -13,7 +13,7 @@
 window.nuxPendingChangesGadgetWrapper = function (mw) {
 	// wrapper start
 
-	console.log('pendingChangesGadget');
+	console.log('pendingChangesGadget executing...', mw, Object.keys(mw));
 
 	var pendingChangesGadget = {
 		version: 4,
@@ -28,6 +28,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 */
 		init: function () {
 			var specialPage = mw.config.get('wgCanonicalSpecialPageName');
+			console.log('pendingChangesGadget init:', specialPage);
 			if (!specialPage) {
 				return;
 			}
@@ -385,19 +386,69 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		},
 	};
 
-	document.addEventListener("DOMContentLoaded", function() {
+	//console.log('document.readyState:', document.readyState);
+	if (document.readyState === 'loading') {
+		document.addEventListener("DOMContentLoaded", function() {
+			pendingChangesGadget.init();
+		});
+	} else {
 		pendingChangesGadget.init();
-	});
+	}
 
 	// wrapper end
 };
+
+/**
+ * Wait for condition (e.g. for object/function to be defined).
+ * 
+ * @param {Function} condition Wait until true.
+ * @param {Function} callback Function to run after true.
+ * @param {Number} interval [optional] Interval for checking the condition.
+ */
+function waitForCondition(condition, callback, interval) {
+	if (condition()) {
+		callback();
+	} else {
+		if (typeof interval !== 'number') {
+			interval = 200;
+		}
+		let intervalId = setInterval(function() {
+			console.log('waiting...');
+			if (condition()) {
+				console.log('done');
+				clearInterval(intervalId);
+				callback();
+			}
+		}, interval);
+	}
+}
+
+waitForCondition(function(){
+	return typeof mw == 'object' && 'loader' in mw && typeof mw.loader.using === 'function';
+}, function() {
+	mw.loader.using(["mediawiki.util"]).then( function() {
+		nuxPendingChangesGadgetWrapper(mw);
+	});
+})
+
+/**
 // inject code into site context
 var script = document.createElement('script');
 script.appendChild(
 	document.createTextNode(`
+	if (!mw || !mw.loader || !mw.loader.using) {
+		setInterval(() => {
+			if (!mw || !mw.loader || !mw.loader.using) {
+			}
+		}, 200);
+	}
+	// mw.util is not ready immediately
+	mw.loader.using( ["mediawiki.util"] ).then( function() {
 		nuxPendingChangesGadgetWrapper(mw);
+	});
 	`)
 );
 (document.body || document.head || document.documentElement).appendChild(
 	script
 );
+/**/
