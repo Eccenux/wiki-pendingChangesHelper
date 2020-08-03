@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.4.1
-// @description  [0.4.1] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.4.2
+// @description  [0.4.2] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -13,7 +13,7 @@
 window.nuxPendingChangesGadgetWrapper = function (mw) {
 	// wrapper start
 
-	console.log('pendingChangesGadget executing...', mw, Object.keys(mw));
+	//console.log('pendingChangesGadget executing...', mw, Object.keys(mw));
 
 	var pendingChangesGadget = {
 		version: 4,
@@ -28,7 +28,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 */
 		init: function () {
 			var specialPage = mw.config.get('wgCanonicalSpecialPageName');
-			console.log('pendingChangesGadget init:', specialPage);
+			//console.log('pendingChangesGadget init:', specialPage);
 			if (!specialPage) {
 				return;
 			}
@@ -413,9 +413,9 @@ function waitForCondition(condition, callback, interval) {
 			interval = 200;
 		}
 		let intervalId = setInterval(function() {
-			console.log('waiting...');
+			//console.log('waiting...');
 			if (condition()) {
-				console.log('done');
+				//console.log('done');
 				clearInterval(intervalId);
 				callback();
 			}
@@ -423,32 +423,11 @@ function waitForCondition(condition, callback, interval) {
 	}
 }
 
+// wait for mw.loader and then for mw.util
 waitForCondition(function(){
 	return typeof mw == 'object' && 'loader' in mw && typeof mw.loader.using === 'function';
 }, function() {
 	mw.loader.using(["mediawiki.util"]).then( function() {
 		nuxPendingChangesGadgetWrapper(mw);
 	});
-})
-
-/**
-// inject code into site context
-var script = document.createElement('script');
-script.appendChild(
-	document.createTextNode(`
-	if (!mw || !mw.loader || !mw.loader.using) {
-		setInterval(() => {
-			if (!mw || !mw.loader || !mw.loader.using) {
-			}
-		}, 200);
-	}
-	// mw.util is not ready immediately
-	mw.loader.using( ["mediawiki.util"] ).then( function() {
-		nuxPendingChangesGadgetWrapper(mw);
-	});
-	`)
-);
-(document.body || document.head || document.documentElement).appendChild(
-	script
-);
-/**/
+});
