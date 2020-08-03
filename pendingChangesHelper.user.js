@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.3.0
-// @description  [0.3.0] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.4.1
+// @description  [0.4.1] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -10,7 +10,7 @@
 // @downloadURL  https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.user.js
 // ==/UserScript==
 
-window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
+window.nuxPendingChangesGadgetWrapper = function (mw) {
 	// wrapper start
 
 	console.log('pendingChangesGadget');
@@ -280,9 +280,9 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 
 				if (this.wasVisited(item)) continue;
 
-				if (!jQuery(item).hasClass('not-patrolled')) continue;
+				if (!item.classList.contains('not-patrolled')) continue;
 
-				var link = jQuery(item).children('a.mw-newpages-pagename');
+				var link = item.querySelectorAll('a.mw-newpages-pagename');
 
 				if (!link.length) continue;
 
@@ -317,7 +317,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 
 				if (this.wasVisited(item)) continue;
 
-				if (jQuery(item).children('span.fr-under-review').length)
+				if (item.querySelectorAll('span.fr-under-review').length)
 					continue;
 
 				var links = item.getElementsByTagName('a');
@@ -385,7 +385,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 		},
 	};
 
-	jQuery(document).ready(function () {
+	document.addEventListener("DOMContentLoaded", function() {
 		pendingChangesGadget.init();
 	});
 
@@ -395,10 +395,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw, jQuery) {
 var script = document.createElement('script');
 script.appendChild(
 	document.createTextNode(`
-		// timeout because jQuery is not always ready
-		setTimeout(() => {
-			nuxPendingChangesGadgetWrapper(mw, jQuery);
-		}, 1000);
+		nuxPendingChangesGadgetWrapper(mw);
 	`)
 );
 (document.body || document.head || document.documentElement).appendChild(
