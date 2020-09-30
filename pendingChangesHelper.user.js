@@ -1,14 +1,15 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.4.2
-// @description  [0.4.2] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.5.0
+// @description  [0.5.0] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
 // @updateURL    https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.meta.js
 // @downloadURL  https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.user.js
 // ==/UserScript==
+/* global mw, nuxPendingChangesGadgetWrapper */
 
 window.nuxPendingChangesGadgetWrapper = function (mw) {
 	// wrapper start
@@ -20,6 +21,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		limit: 5,
 		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
 		openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
+		openUnreviewedCaption: 'Pierwsze $number nowych artykułów',
 		allDoneInfo: 'Koniec 😎',
 		specialPage: '',
 
@@ -65,8 +67,14 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 			if (this.specialPage == 'PendingChanges' && this.hasUnwatchedPages()) {
 				p.appendChild(document.createTextNode(' • '));
 				this.createUnwatchedButton(p);
-			} else if (this.specialPage == 'Contributions' && !this.hasPendingContributions()) {
-				p.style.textDecoration = 'line-through';
+			} else if (this.specialPage == 'Contributions') {
+				if (!this.hasPendingContributions()) {
+					p.style.textDecoration = 'line-through';
+				}
+				if (this.hasUnreviewedPages()) {
+					p.appendChild(document.createTextNode(' • '));
+					this.createUnreviewedButton(p);
+				}
 			}
 
 			list.parentNode.insertBefore(p, list);
@@ -133,6 +141,21 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 			};
 
 			var caption = this.openUnwatchedCaption.replace('$number', this.limit);
+
+			this.createButton(caption, list, callback);
+		},
+
+		/**
+		 * Create unreviewed items button.
+		 * @param {Element} container Container to which the button is to be added.
+		 */
+		createUnreviewedButton: function (list) {
+			var callback = () => {
+				this.openUnreviewedPages();
+				return false;
+			};
+
+			var caption = this.openUnreviewedCaption.replace('$number', this.limit);
 
 			this.createButton(caption, list, callback);
 		},
@@ -349,6 +372,25 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 
 			this.openPendingItems(listItems);
 		},
+
+		hasUnreviewedPages: function () {
+			var listItems = this.getList().querySelectorAll('li.flaggedrevs-unreviewed');
+			if (!listItems.length) return false;
+			return listItems;
+		},
+		/**
+		 * Special:PendingChanges - Unreviewed
+		 */
+		openUnreviewedPages: function () {
+			var listItems = this.getList().querySelectorAll('li.flaggedrevs-unreviewed:not(.visited)');
+			if (!listItems.length) {
+				alert(this.allDoneInfo);
+				return;
+			}
+
+			this.openPendingItems(listItems);
+		},
+
 		/**
 		 * Special:Watchlist
 		 */
