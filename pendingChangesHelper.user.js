@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.5.0
-// @description  [0.5.0] Pomocnik do przeglądania strona na Wikipedii.
+// @version      0.5.1
+// @description  [0.5.1] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -211,7 +211,20 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 			if (!listItems.length) {
 				return;
 			}
-			// find unique URLs (title.href -> diff.href)
+			const {uniques, lastIndex} = this.contributionsFindUnique(listItems);
+			this.contributionsMarkUnique(listItems, uniques, lastIndex);
+
+			// open found
+			this.openDiffs(uniques);
+
+			return Object.keys(uniques).length > 0;
+		},
+		/**
+		 * Find unique URLs (title.href -> diff.href)
+		 * @param {NodeList} listItems list of contributions items.
+		 */
+		contributionsFindUnique: function (listItems) {
+			// 
 			const uniques = {};
 			let lastIndex = -1;
 			for (let index = 0; index < listItems.length; index++) {
@@ -222,7 +235,11 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 				}
 				let id = item.querySelector('.mw-contributions-title').href;
 				//var oid = item.getAttribute('data-mw-revid');
-				let diff = item.querySelector('.mw-changeslist-diff').href;
+				let diff = item.querySelector('.mw-changeslist-diff')?.href;
+				// new page, first contribution
+				if (!diff) {
+					diff = false;
+				}
 				uniques[id] = diff;
 
 				this.markAsVisited(item);
@@ -230,8 +247,12 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 					break;
 				}
 			}
-
-			// mark found to the end of the list
+			return {uniques, lastIndex};
+		},
+		/**
+		 * Mark found to the end of the list.
+		 */
+		contributionsMarkUnique: function (listItems, uniques, lastIndex) {
 			for (let index = lastIndex + 1; index < listItems.length; index++) {
 				const item = listItems[index];
 				lastIndex = index;
@@ -243,11 +264,6 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 					this.markAsVisited(item);
 				}
 			}
-
-			// open found
-			this.openDiffs(uniques);
-
-			return Object.keys(uniques).length > 0;
 		},
 		/**
 		 * Open generic diff urls as las-flagged diff.
@@ -379,7 +395,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 			return listItems;
 		},
 		/**
-		 * Special:PendingChanges - Unreviewed
+		 * Special:Contributions - Unreviewed
 		 */
 		openUnreviewedPages: function () {
 			var listItems = this.getList().querySelectorAll('li.flaggedrevs-unreviewed:not(.visited)');
@@ -388,7 +404,15 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 				return;
 			}
 
-			this.openPendingItems(listItems);
+			const {uniques, lastIndex} = this.contributionsFindUnique(listItems);
+			this.contributionsMarkUnique(listItems, uniques, lastIndex);
+
+			// open found URLs
+			for (const url in uniques) {
+				if (uniques.hasOwnProperty(url)) {
+					window.open(url);
+				}
+			}
 		},
 
 		/**
