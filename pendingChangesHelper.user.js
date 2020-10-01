@@ -69,7 +69,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 				this.createUnwatchedButton(p);
 			} else if (this.specialPage == 'Contributions') {
 				if (!this.hasPendingContributions()) {
-					p.style.textDecoration = 'line-through';
+					p.querySelector('a').style.textDecoration = 'line-through';
 				}
 				if (this.hasUnreviewedPages()) {
 					p.appendChild(document.createTextNode(' • '));
