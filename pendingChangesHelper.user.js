@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      0.5.1
-// @description  [0.5.1] Pomocnik do przeglądania strona na Wikipedii.
+// @version      4.6.0
+// @description  [4.6.0] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -17,7 +17,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 	//console.log('pendingChangesGadget executing...', mw, Object.keys(mw));
 
 	var pendingChangesGadget = {
-		version: 4,
+		version: '4.6.0',
 		limit: 5,
 		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
 		openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
@@ -84,8 +84,9 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 * @param {Element} container Container to which the button is to be added.
 		 */
 		createMainButton: function (container) {
-			var callback = () => {
-				this.openPages();
+			var me = this;
+			var callback = function() {
+				me.openPages();
 				return false;
 			};
 
@@ -135,8 +136,9 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 * @param {Element} container Container to which the button is to be added.
 		 */
 		createUnwatchedButton: function (list) {
-			var callback = () => {
-				this.openUnwatchedPages();
+			var me = this;
+			var callback = function() {
+				me.openUnwatchedPages();
 				return false;
 			};
 
