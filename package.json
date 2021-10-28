@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/Eccenux/wiki-pendingChangesHelper#readme",
   "devDependencies": {
-    "eslint": "7.4.0"
+    "eslint": "8.1.0"
   }
 }
