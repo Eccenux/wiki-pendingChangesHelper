@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      4.6.0
-// @description  [4.6.0] Pomocnik do przeglądania strona na Wikipedii.
+// @version      4.7.0
+// @description  [4.7.0] Pomocnik do przeglądania strona na Wikipedii.
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -17,7 +17,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 	//console.log('pendingChangesGadget executing...', mw, Object.keys(mw));
 
 	var pendingChangesGadget = {
-		version: '4.6.0',
+		version: '4.7.0',
 		limit: 5,
 		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
 		openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
@@ -163,7 +163,22 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		},
 
 		/**
-		 * List items container.
+		 * Selector for lists.
+		 * @param {String} subSelector Selector for list elelemnts (e.g. `li`).
+		 * @returns NodeList
+		 */
+		getListElements: function (subSelector) {
+			return document.querySelectorAll(`#mw-content-text ul ${subSelector}`);
+		},
+
+		/**
+		 * First list items container.
+		 * 
+		 * Note! There might be more then one list.
+		 * New versions of MW seem to separate days on contributions page so many `ul` on a sinlge page.
+		 * 
+		 * Use `getListElements` instead.
+		 * 
 		 * @return null when list was not found.
 		 */
 		getList: function () {
@@ -310,7 +325,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 * Special:Newpages
 		 */
 		openNewPages: function () {
-			var listItems = this.getList().querySelectorAll('li');
+			var listItems = this.getListElements('li');
 			if (!listItems.length) return;
 
 			var i = 0;
@@ -340,7 +355,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 * Special:PendingChanges
 		 */
 		openPendingChanges: function () {
-			var listItems = this.getList().querySelectorAll('li');
+			var listItems = this.getListElements('li');
 			if (!listItems.length) return;
 
 			return this.openPendingItems(listItems);
@@ -374,7 +389,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		},
 
 		hasUnwatchedPages: function () {
-			var listItems = this.getList().querySelectorAll('li.fr-unreviewed-unwatched');
+			var listItems = this.getListElements('li.fr-unreviewed-unwatched');
 			if (!listItems.length) return false;
 			return listItems;
 		},
@@ -382,7 +397,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 * Special:PendingChanges - Unwatched
 		 */
 		openUnwatchedPages: function () {
-			var listItems = this.getList().querySelectorAll('li.fr-unreviewed-unwatched:not(.visited)');
+			var listItems = this.getListElements('li.fr-unreviewed-unwatched:not(.visited)');
 			if (!listItems.length) {
 				alert(this.allDoneInfo);
 				return;
@@ -392,7 +407,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		},
 
 		hasUnreviewedPages: function () {
-			var listItems = this.getList().querySelectorAll('li.flaggedrevs-unreviewed');
+			var listItems = this.getListElements('li.flaggedrevs-unreviewed');
 			if (!listItems.length) return false;
 			return listItems;
 		},
@@ -400,7 +415,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 * Special:Contributions - Unreviewed
 		 */
 		openUnreviewedPages: function () {
-			var listItems = this.getList().querySelectorAll('li.flaggedrevs-unreviewed:not(.visited)');
+			var listItems = this.getListElements('li.flaggedrevs-unreviewed:not(.visited)');
 			if (!listItems.length) {
 				alert(this.allDoneInfo);
 				return;
