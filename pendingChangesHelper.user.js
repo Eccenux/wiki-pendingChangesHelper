@@ -17,7 +17,7 @@ function pendingChangesHelperWrapper (mw) {
 	//console.log('pendingChangesHelper executing...', mw, Object.keys(mw));
 
 	let pendingChangesHelper = {
-		version: '4.7.0',
+		version: '5.0.0',
 		limit: 5,
 		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
 		openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
@@ -244,7 +244,6 @@ function pendingChangesHelperWrapper (mw) {
 		 * @param {NodeList} listItems list of contributions items.
 		 */
 		contributionsFindUnique: function (listItems) {
-			// 
 			const uniques = {};
 			let lastIndex = -1;
 			for (let index = 0; index < listItems.length; index++) {
@@ -472,8 +471,8 @@ function pendingChangesHelperWrapper (mw) {
 		},
 	};
 
-	// usage: mw.hook('userjs.pendingChangesHelper.preInit').add(function (pch) {});
-	mw.hook('userjs.pendingChangesHelper.preInit').fire(pendingChangesHelper);
+	// usage: mw.hook('userjs.pendingChangesHelper.beforeInit').add(function (pch) {});
+	mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
 
 	//console.log('document.readyState:', document.readyState);
 	if (document.readyState === 'loading') {
@@ -485,7 +484,7 @@ function pendingChangesHelperWrapper (mw) {
 	}
 
 	// wrapper end
-};
+}
 
 /**
  * Wait for condition (e.g. for object/function to be defined).
