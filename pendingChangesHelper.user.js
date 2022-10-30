@@ -1,22 +1,22 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      4.7.0
-// @description  [4.7.0] Pomocnik do przeglądania strona na Wikipedii.
+// @version      5.0.0
+// @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
 // @updateURL    https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.meta.js
 // @downloadURL  https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.user.js
 // ==/UserScript==
-/* global mw, nuxPendingChangesGadgetWrapper */
+/* global mw */
 
-window.nuxPendingChangesGadgetWrapper = function (mw) {
+function pendingChangesHelperWrapper (mw) {
 	// wrapper start
 
-	//console.log('pendingChangesGadget executing...', mw, Object.keys(mw));
+	//console.log('pendingChangesHelper executing...', mw, Object.keys(mw));
 
-	var pendingChangesGadget = {
+	let pendingChangesHelper = {
 		version: '4.7.0',
 		limit: 5,
 		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
@@ -30,7 +30,7 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		 */
 		init: function () {
 			var specialPage = mw.config.get('wgCanonicalSpecialPageName');
-			//console.log('pendingChangesGadget init:', specialPage);
+			//console.log('pendingChangesHelper init:', specialPage);
 			if (!specialPage) {
 				return;
 			}
@@ -45,6 +45,9 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 			this.specialPage = specialPage;
 
 			this.createActions();
+
+			// usage: mw.hook('userjs.pendingChangesHelper.afterInit').add(function (pch) {});
+			mw.hook('userjs.pendingChangesHelper.afterInit').fire(this);
 		},
 
 		/**
@@ -469,13 +472,16 @@ window.nuxPendingChangesGadgetWrapper = function (mw) {
 		},
 	};
 
+	// usage: mw.hook('userjs.pendingChangesHelper.preInit').add(function (pch) {});
+	mw.hook('userjs.pendingChangesHelper.preInit').fire(pendingChangesHelper);
+
 	//console.log('document.readyState:', document.readyState);
 	if (document.readyState === 'loading') {
 		document.addEventListener("DOMContentLoaded", function() {
-			pendingChangesGadget.init();
+			pendingChangesHelper.init();
 		});
 	} else {
-		pendingChangesGadget.init();
+		pendingChangesHelper.init();
 	}
 
 	// wrapper end
@@ -511,6 +517,6 @@ waitForCondition(function(){
 	return typeof mw == 'object' && 'loader' in mw && typeof mw.loader.using === 'function';
 }, function() {
 	mw.loader.using(["mediawiki.util"]).then( function() {
-		nuxPendingChangesGadgetWrapper(mw);
+		pendingChangesHelperWrapper(mw);
 	});
 });
