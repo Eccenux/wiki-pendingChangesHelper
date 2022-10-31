@@ -9,7 +9,9 @@ Działa na stronach:
 4. Nowe strony (Special:Newpages).
 
 Gadżet i pl.wiki:
-https://pl.wikipedia.org/wiki/Wikipedia:Narz%C4%99dzia/Pending_Changes_Helper
+
+* https://pl.wikipedia.org/wiki/Wikipedia:Narz%C4%99dzia/Pending_Changes_Helper -- opis na pl.wiki.
+* https://pl.wikipedia.org/wiki/MediaWiki:Gadget-oldreviewedpages.js -- kod gadżetu.
 
 Instalacja
 ----------
