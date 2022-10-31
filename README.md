@@ -8,6 +8,9 @@ Działa na stronach:
 3. Obserwowane (Special:Watchlist) – tu również otwieranych jest 5 pierwszych nieprzejrzanych. Ale tutaj zaczyna się od najnowszych zmian.
 4. Nowe strony (Special:Newpages).
 
+Gadżet i pl.wiki:
+https://pl.wikipedia.org/wiki/Wikipedia:Narz%C4%99dzia/Pending_Changes_Helper
+
 Instalacja
 ----------
 
