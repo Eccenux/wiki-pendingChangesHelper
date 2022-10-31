@@ -17,12 +17,17 @@ function pendingChangesHelperWrapper (mw) {
 	//console.log('pendingChangesHelper executing...', mw, Object.keys(mw));
 
 	let pendingChangesHelper = {
+		/** @readonly */
 		version: '5.0.0',
-		limit: 5,
-		openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
-		openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
-		openUnreviewedCaption: 'Pierwsze $number nowych artykułów',
-		allDoneInfo: 'Koniec 😎',
+		/** Configurable by users. */
+		options: {
+			limit: 5,
+			openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
+			openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
+			openUnreviewedCaption: 'Pierwsze $number nowych artykułów',
+			allDoneInfo: 'Koniec 😎',
+		},
+		/** @private */
 		specialPage: '',
 
 		/**
@@ -93,7 +98,7 @@ function pendingChangesHelperWrapper (mw) {
 				return false;
 			};
 
-			var caption = this.openCaption.replace('$number', this.limit);
+			var caption = this.options.openCaption.replace('$number', this.options.limit);
 
 			this.createPortletButton(caption, 'portlet-open-ten-pages', callback);
 			this.createButton(caption, container, callback);
@@ -145,7 +150,7 @@ function pendingChangesHelperWrapper (mw) {
 				return false;
 			};
 
-			var caption = this.openUnwatchedCaption.replace('$number', this.limit);
+			var caption = this.options.openUnwatchedCaption.replace('$number', this.options.limit);
 
 			this.createButton(caption, list, callback);
 		},
@@ -160,7 +165,7 @@ function pendingChangesHelperWrapper (mw) {
 				return false;
 			};
 
-			var caption = this.openUnreviewedCaption.replace('$number', this.limit);
+			var caption = this.options.openUnreviewedCaption.replace('$number', this.options.limit);
 
 			this.createButton(caption, list, callback);
 		},
@@ -212,7 +217,7 @@ function pendingChangesHelperWrapper (mw) {
 					break;
 			}
 			if (!didSome) {
-				alert(this.allDoneInfo);
+				alert(this.options.allDoneInfo);
 			}
 		},
 
@@ -262,7 +267,7 @@ function pendingChangesHelperWrapper (mw) {
 				uniques[id] = diff;
 
 				this.markAsVisited(item);
-				if (Object.keys(uniques).length >= this.limit) {
+				if (Object.keys(uniques).length >= this.options.limit) {
 					break;
 				}
 			}
@@ -333,7 +338,7 @@ function pendingChangesHelperWrapper (mw) {
 			var i = 0;
 			var done = 0;
 
-			while (i < listItems.length && done < this.limit) {
+			while (i < listItems.length && done < this.options.limit) {
 				var item = listItems[i];
 				i++;
 
@@ -370,7 +375,7 @@ function pendingChangesHelperWrapper (mw) {
 			var i = 0;
 			var done = 0;
 
-			while (i < listItems.length && done < this.limit) {
+			while (i < listItems.length && done < this.options.limit) {
 				var item = listItems[i];
 				i++;
 
@@ -401,7 +406,7 @@ function pendingChangesHelperWrapper (mw) {
 		openUnwatchedPages: function () {
 			var listItems = this.getListElements('li.fr-unreviewed-unwatched:not(.visited)');
 			if (!listItems.length) {
-				alert(this.allDoneInfo);
+				alert(this.options.allDoneInfo);
 				return;
 			}
 
@@ -419,7 +424,7 @@ function pendingChangesHelperWrapper (mw) {
 		openUnreviewedPages: function () {
 			var listItems = this.getListElements('li.flaggedrevs-unreviewed:not(.visited)');
 			if (!listItems.length) {
-				alert(this.allDoneInfo);
+				alert(this.options.allDoneInfo);
 				return;
 			}
 
@@ -445,7 +450,7 @@ function pendingChangesHelperWrapper (mw) {
 
 			var i = 0;
 			var done = 0;
-			while (i < listItems.length && done < this.limit) {
+			while (i < listItems.length && done < this.options.limit) {
 				var item = listItems[i];
 				i++;
 
