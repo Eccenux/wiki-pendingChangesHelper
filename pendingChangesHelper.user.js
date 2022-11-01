@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      5.0.0
+// @version      5.1.0
 // @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
@@ -18,10 +18,14 @@ function pendingChangesHelperWrapper (mw) {
 
 	let pendingChangesHelper = {
 		/** @readonly */
-		version: '5.0.0',
+		version: '5.1.0',
 		/** Configurable by users. */
 		options: {
 			limit: 5,
+			skipNewpages: false,
+			skipWatchlist: false,
+			skipContributions: false,
+
 			openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
 			openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
 			openUnreviewedCaption: 'Pierwsze $number nowych artykułów',
@@ -45,6 +49,14 @@ function pendingChangesHelperWrapper (mw) {
 				specialPage != 'Contributions' &&
 				specialPage != 'Watchlist'
 			) {
+				return;
+			}
+			if (
+				(specialPage == 'Newpages' && this.options.skipNewpages) ||
+				(specialPage == 'Contributions' && this.options.skipContributions) ||
+				(specialPage == 'Watchlist' && this.options.skipWatchlist)
+			) {
+				console.log('skip specialPage: ', specialPage);
 				return;
 			}
 			this.specialPage = specialPage;
