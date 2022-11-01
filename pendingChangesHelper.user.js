@@ -503,6 +503,10 @@ function pendingChangesHelperWrapper (mw) {
 	// wrapper end
 }
 
+// -------------------------------------------------------------------
+//  Gadget edition END
+// -------------------------------------------------------------------
+
 /**
  * Wait for condition (e.g. for object/function to be defined).
  * 
