@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      5.1.0
+// @version      5.1.1
 // @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
@@ -202,7 +202,15 @@ function pendingChangesHelperWrapper (mw) {
 		 * @return null when list was not found.
 		 */
 		getList: function () {
-			var list = document.querySelector('#mw-content-text ul');
+			// try to get pager body (so that we don't get some other list; which was the case for `mw-logevent-loglines`, for blocked users)
+			let parentNode = document.querySelector('.mw-pager-body');
+			if (!parentNode) {
+				parentNode = document.querySelector('#mw-content-text');
+			}
+			let list = null;
+			if (parentNode) {
+				list = parentNode.querySelector('ul');
+			}
 			return list;
 		},
 
