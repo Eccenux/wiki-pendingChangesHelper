@@ -18,7 +18,7 @@ function pendingChangesHelperWrapper (mw) {
 
 	let pendingChangesHelper = {
 		/** @readonly */
-		version: '5.1.0',
+		version: '5.1.1',
 		/** Configurable by users. */
 		options: {
 			limit: 5,
