@@ -1,8 +1,8 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      5.1.1
-// @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]].
+// @version      5.1.2
+// @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]], [[MediaWiki:Gadget-oldreviewedpages.js]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
 // @grant        none
@@ -14,11 +14,9 @@
 function pendingChangesHelperWrapper (mw) {
 	// wrapper start
 
-	//console.log('pendingChangesHelper executing...', mw, Object.keys(mw));
-
 	let pendingChangesHelper = {
 		/** @readonly */
-		version: '5.1.1',
+		version: '5.1.2',
 		/** Configurable by users. */
 		options: {
 			limit: 5,
@@ -39,7 +37,7 @@ function pendingChangesHelperWrapper (mw) {
 		 */
 		init: function () {
 			var specialPage = mw.config.get('wgCanonicalSpecialPageName');
-			//console.log('pendingChangesHelper init:', specialPage);
+			//console.log('[pendingChangesHelper]', 'init:', specialPage);
 			if (!specialPage) {
 				return;
 			}
@@ -56,7 +54,7 @@ function pendingChangesHelperWrapper (mw) {
 				(specialPage == 'Contributions' && this.options.skipContributions) ||
 				(specialPage == 'Watchlist' && this.options.skipWatchlist)
 			) {
-				console.log('skip specialPage: ', specialPage);
+				console.log('[pendingChangesHelper]', 'skip specialPage: ', specialPage);
 				return;
 			}
 			this.specialPage = specialPage;
@@ -233,7 +231,7 @@ function pendingChangesHelperWrapper (mw) {
 					didSome = this.openWatchedPages();
 					break;
 				default:
-					console.warn('Unsupported page');
+					console.warn('[pendingChangesHelper]', 'Unsupported page');
 					break;
 			}
 			if (!didSome) {
@@ -343,7 +341,6 @@ function pendingChangesHelperWrapper (mw) {
 			// open found URLs
 			for (var i = 0; i < reviewUrls.length; i++) {
 				let url = reviewUrls[i];
-				//console.log(url);
 				window.open(url);
 			}
 		},
@@ -471,12 +468,16 @@ function pendingChangesHelperWrapper (mw) {
 			var i = 0;
 			var done = 0;
 			while (i < listItems.length && done < this.options.limit) {
-				var item = listItems[i];
+				let item = listItems[i];
 				i++;
 
 				if (this.wasVisited(item)) continue;
 
-				var link = item.querySelector('.mw-fr-reviewlink a');
+				let link = item.querySelector('.mw-fr-reviewlink a');
+				if (!link) {
+					console.warn('[pendingChangesHelper]', 'openWatchedPages: no review link', {item, cls:item.className, txt:item.innerText});
+					continue;
+				}
 
 				window.open(link.href);
 				this.markAsVisited(item);
@@ -499,7 +500,6 @@ function pendingChangesHelperWrapper (mw) {
 	// usage: mw.hook('userjs.pendingChangesHelper.beforeInit').add(function (pch) {});
 	mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
 
-	//console.log('document.readyState:', document.readyState);
 	if (document.readyState === 'loading') {
 		document.addEventListener("DOMContentLoaded", function() {
 			pendingChangesHelper.init();
