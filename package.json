@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Wiki Pending Changes Helper",
   "main": "pendingChangesHelper.user.js",
+	"type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +17,9 @@
     "url": "https://github.com/Eccenux/wiki-pendingChangesHelper/issues"
   },
   "homepage": "https://github.com/Eccenux/wiki-pendingChangesHelper#readme",
+  "dependencies": {
+	  "wikiploy": "1.x"
+  },
   "devDependencies": {
     "eslint": "8.1.0"
   }
