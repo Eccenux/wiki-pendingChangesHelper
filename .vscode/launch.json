@@ -7,6 +7,15 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "build",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"program": "${workspaceFolder}\\build.js"
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "Run current",
 			"skipFiles": [
 				"<node_internals>/**"
