@@ -1,16 +1,20 @@
 /**
  * Dev/staging deploy.
  */
-import {DeployConfig, Wikiploy} from 'wikiploy';
+import { DeployConfig, Wikiploy } from 'wikiploy';
+import { build_js, readVersion } from './build';
 
 const ployBot = new Wikiploy();
 
-// custom summary
-ployBot.summary = () => {
-	return 'v5.2.0: wikiploy test';
-}
-
 (async () => {
+	let version = await readVersion();
+	// custom summary
+	ployBot.summary = () => {
+		return `v${version}: JS builder`;
+	}
+
+	await build_js();
+
 	const configs = [];
 	configs.push(new DeployConfig({
 		src: 'pendingChangesHelper.user.js',

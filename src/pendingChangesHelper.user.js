@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      5.2.0
+// @version      {version}
 // @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]], [[MediaWiki:Gadget-pendingChangesHelper.js]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
@@ -16,7 +16,7 @@ function pendingChangesHelperWrapper (mw) {
 
 	let pendingChangesHelper = {
 		/** @readonly */
-		version: '5.1.2',
+		version: '{version}',
 		/** Configurable by users. */
 		options: {
 			limit: 5,

@@ -1,9 +1,9 @@
 {
   "name": "wiki-pendingchangeshelper",
-  "version": "1.0.0",
+  "version": "5.2.1",
   "description": "Wiki Pending Changes Helper",
   "main": "pendingChangesHelper.user.js",
-	"type": "module",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/Eccenux/wiki-pendingChangesHelper#readme",
   "dependencies": {
-	  "wikiploy": "1.x"
+    "wikiploy": "1.x"
   },
   "devDependencies": {
-    "eslint": "8.1.0"
+    "eslint": "^8.44.0"
   }
 }
