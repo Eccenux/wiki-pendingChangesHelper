@@ -1,12 +1,27 @@
-import less from 'less';
-import fs from 'fs';
 import fsa from 'fs/promises'
+
+function prepareMeta (monkeyJs) {
+	// extract the meta header
+	let match = monkeyJs.match(/\/\/\s*==\/UserScript==/);
+	if (!match) {
+		console.warn('meta not found');
+		return "";	// invalid?
+	}
+	let metaEnd = match.index + match[0].length;
+	let meta = monkeyJs.substr(0, metaEnd);
+	
+	// remove update urls
+	meta = meta.replace(/\r\n/g, '\n');
+	meta = meta.replace(/\n\/\/ @(updateURL|downloadURL).+/g, '');
+	return meta.trim() + '\n';
+}
 
 export async function build_js() {
 	let srcJs = 'src/pendingChangesHelper.user.js';
-	let dstJs = 'pendingChangesHelper.user.js';
-	const data = await fsa.readFile(srcJs, 'utf8');
-	await fsa.writeFile(dstJs, data);
+	const monkeyJs = await fsa.readFile(srcJs, 'utf8');
+	const monkeyMetaJs = prepareMeta(monkeyJs);
+	await fsa.writeFile('pendingChangesHelper.user.js', monkeyJs);
+	await fsa.writeFile('pendingChangesHelper.meta.js', monkeyMetaJs);
 }
 
 /**/
