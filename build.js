@@ -11,6 +11,7 @@ function applyVersion (js, version) {
 	return js.replace(/\{version\}/g, version);
 }
 
+/** Prepare monkey user script meta. */
 function prepareMeta (monkeyJs) {
 	// extract the meta header
 	let match = monkeyJs.match(/\/\/\s*==\/UserScript==/);
@@ -27,6 +28,35 @@ function prepareMeta (monkeyJs) {
 	return meta.trim() + '\n';
 }
 
+/** Prepare gadget header. */
+function prepareGadget (monkeyJs) {
+	// extract the meta header
+	let match = monkeyJs.match(/\/\/\s*==\/UserScript==/);
+	if (!match) {
+		console.warn('meta not found');
+		return monkeyJs;	// invalid?
+	}
+	let metaPreEnd = match.index;
+	let metaEnd = match.index + match[0].length;
+	let meta = monkeyJs.substr(0, metaPreEnd);
+	let content = monkeyJs.substring(metaEnd);
+	
+	// remove head/foot
+	meta = '\n' + meta.trim();
+	meta = meta.replace(/\n\/\/ ==\/?UserScript==/g, '');
+	// keep only some
+	meta = meta.replace(/\n\/\/ @(\w+).+/g, function(a, key) {
+		if (key.search(/name|description|author|version/) === 0) {
+			return a;
+		}
+		return '';
+	});
+
+	// merge
+	return meta.trim() + '\n\n' + content.trim();
+}
+
+/** Prepare all JS files. */
 export async function build_js() {
 	let srcJs = 'src/pendingChangesHelper.user.js';
 
@@ -38,11 +68,17 @@ export async function build_js() {
 		return false;
 	}
 	let monkeyJs = applyVersion(rawJs, version);
-	await fsa.writeFile('pendingChangesHelper.user.js', monkeyJs);
+	const initMonkey = await fsa.readFile('src/init.user.js', 'utf8');
+	await fsa.writeFile('pendingChangesHelper.user.js', monkeyJs + '\n\n' + initMonkey);
 
 	// meta
 	const monkeyMetaJs = prepareMeta(monkeyJs);
 	await fsa.writeFile('pendingChangesHelper.meta.js', monkeyMetaJs);
+
+	// gadget
+	const initMw = await fsa.readFile('src/init.mw.js', 'utf8');
+	const mwJs = prepareGadget(monkeyJs);
+	await fsa.writeFile('pendingChangesHelper.mw.js', mwJs + '\n\n' + initMw);
 
 	return true;
 }
