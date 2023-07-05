@@ -28,6 +28,9 @@ waitForCondition(function(){
 	return typeof mw == 'object' && 'loader' in mw && typeof mw.loader.using === 'function';
 }, function() {
 	mw.loader.using(["mediawiki.util"]).then( function() {
-		pendingChangesHelperWrapper(mw);
+        // escape loader context
+        setTimeout(() => {
+            pendingChangesHelperWrapper(mw);
+        }, 0);
 	});
 });

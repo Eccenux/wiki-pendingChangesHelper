@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      5.2.3
+// @version      5.3.0
 // @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]], [[MediaWiki:Gadget-pendingChangesHelper.js]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
@@ -17,13 +17,14 @@ function pendingChangesHelperWrapper (mw) {
 
 	let pendingChangesHelper = {
 		/** @readonly */
-		version: '5.2.3',
+		version: '5.3.0',
 		/** Configurable by users. */
 		options: {
 			limit: 5,
 			skipNewpages: false,
 			skipWatchlist: false,
 			skipContributions: false,
+			skipRecentchanges: false,
 
 			openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
 			openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
@@ -44,6 +45,7 @@ function pendingChangesHelperWrapper (mw) {
 			}
 			if (
 				specialPage != 'PendingChanges' &&
+				specialPage != 'Recentchanges' &&
 				specialPage != 'Newpages' &&
 				specialPage != 'Contributions' &&
 				specialPage != 'Watchlist'
@@ -53,6 +55,7 @@ function pendingChangesHelperWrapper (mw) {
 			if (
 				(specialPage == 'Newpages' && this.options.skipNewpages) ||
 				(specialPage == 'Contributions' && this.options.skipContributions) ||
+				(specialPage == 'Recentchanges' && this.options.skipRecentchanges) ||
 				(specialPage == 'Watchlist' && this.options.skipWatchlist)
 			) {
 				console.log('[pendingChangesHelper]', 'skip specialPage: ', specialPage);
@@ -60,6 +63,7 @@ function pendingChangesHelperWrapper (mw) {
 			}
 			this.specialPage = specialPage;
 
+			console.log('[pendingChangesHelper]', 'prepare specialPage: ', specialPage);
 			this.createActions();
 
 			// usage: mw.hook('userjs.pendingChangesHelper.afterInit').add(function (pch) {});
@@ -77,6 +81,7 @@ function pendingChangesHelperWrapper (mw) {
 				list = document.querySelector('.mw-changeslist ul');
 			}
 			if (!list) {
+				console.warn('[pendingChangesHelper]', 'list of changes not found');
 				return;
 			}
 			var p = document.createElement('p');
@@ -206,6 +211,10 @@ function pendingChangesHelperWrapper (mw) {
 			if (!parentNode) {
 				parentNode = document.querySelector('#mw-content-text');
 			}
+			// this should work for RC
+			if (!parentNode) {
+				parentNode = document.querySelector('.mw-changeslist');
+			}
 			let list = null;
 			if (parentNode) {
 				list = parentNode.querySelector('ul');
@@ -228,6 +237,7 @@ function pendingChangesHelperWrapper (mw) {
 				case 'Contributions':
 					didSome = this.openContributions();
 					break;
+				case 'Recentchanges':
 				case 'Watchlist':
 					didSome = this.openWatchedPages();
 					break;
@@ -458,7 +468,7 @@ function pendingChangesHelperWrapper (mw) {
 		},
 
 		/**
-		 * Special:Watchlist
+		 * Special:Watchlist and RC.
 		 */
 		openWatchedPages: function () {
 			var listItems = document.querySelectorAll('.mw-changeslist-need-review:not(.visited)');
@@ -544,6 +554,9 @@ waitForCondition(function(){
 	return typeof mw == 'object' && 'loader' in mw && typeof mw.loader.using === 'function';
 }, function() {
 	mw.loader.using(["mediawiki.util"]).then( function() {
-		pendingChangesHelperWrapper(mw);
+        // escape loader context
+        setTimeout(() => {
+            pendingChangesHelperWrapper(mw);
+        }, 0);
 	});
 });

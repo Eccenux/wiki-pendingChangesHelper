@@ -24,6 +24,7 @@ function pendingChangesHelperWrapper (mw) {
 			skipNewpages: false,
 			skipWatchlist: false,
 			skipContributions: false,
+			skipRecentchanges: false,
 
 			openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
 			openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
@@ -44,6 +45,7 @@ function pendingChangesHelperWrapper (mw) {
 			}
 			if (
 				specialPage != 'PendingChanges' &&
+				specialPage != 'Recentchanges' &&
 				specialPage != 'Newpages' &&
 				specialPage != 'Contributions' &&
 				specialPage != 'Watchlist'
@@ -53,6 +55,7 @@ function pendingChangesHelperWrapper (mw) {
 			if (
 				(specialPage == 'Newpages' && this.options.skipNewpages) ||
 				(specialPage == 'Contributions' && this.options.skipContributions) ||
+				(specialPage == 'Recentchanges' && this.options.skipRecentchanges) ||
 				(specialPage == 'Watchlist' && this.options.skipWatchlist)
 			) {
 				console.log('[pendingChangesHelper]', 'skip specialPage: ', specialPage);
@@ -60,6 +63,7 @@ function pendingChangesHelperWrapper (mw) {
 			}
 			this.specialPage = specialPage;
 
+			console.log('[pendingChangesHelper]', 'prepare specialPage: ', specialPage);
 			this.createActions();
 
 			// usage: mw.hook('userjs.pendingChangesHelper.afterInit').add(function (pch) {});
@@ -77,6 +81,7 @@ function pendingChangesHelperWrapper (mw) {
 				list = document.querySelector('.mw-changeslist ul');
 			}
 			if (!list) {
+				console.warn('[pendingChangesHelper]', 'list of changes not found');
 				return;
 			}
 			var p = document.createElement('p');
@@ -206,6 +211,10 @@ function pendingChangesHelperWrapper (mw) {
 			if (!parentNode) {
 				parentNode = document.querySelector('#mw-content-text');
 			}
+			// this should work for RC
+			if (!parentNode) {
+				parentNode = document.querySelector('.mw-changeslist');
+			}
 			let list = null;
 			if (parentNode) {
 				list = parentNode.querySelector('ul');
@@ -228,6 +237,7 @@ function pendingChangesHelperWrapper (mw) {
 				case 'Contributions':
 					didSome = this.openContributions();
 					break;
+				case 'Recentchanges':
 				case 'Watchlist':
 					didSome = this.openWatchedPages();
 					break;
@@ -458,7 +468,7 @@ function pendingChangesHelperWrapper (mw) {
 		},
 
 		/**
-		 * Special:Watchlist
+		 * Special:Watchlist and RC.
 		 */
 		openWatchedPages: function () {
 			var listItems = document.querySelectorAll('.mw-changeslist-need-review:not(.visited)');

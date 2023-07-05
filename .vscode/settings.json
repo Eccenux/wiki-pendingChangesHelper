@@ -1,5 +1,8 @@
 {
 	"search.exclude": {
-		"package-lock.json": true
+		"package-lock.json": true,
+		"pendingChangesHelper.meta.js": true,
+		"pendingChangesHelper.mw.js": true,
+		"pendingChangesHelper.user.js": true,
 	}
 }
