@@ -45,13 +45,13 @@ function prepareGadget (monkeyJs) {
 	meta = '\n' + meta.trim();
 	meta = meta.replace(/\n\/\/ ==\/?UserScript==/g, '');
 	// keep only some
+	const keep = ['name','description','author','version','homepage','homepageURL','website','source'];
 	meta = meta.replace(/\n\/\/ @(\w+).+/g, function(a, key) {
-		if (key.search(/name|description|author|version/) === 0) {
+		if (keep.indexOf(key) >= 0) {
 			return a;
 		}
 		return '';
 	});
-
 	// merge
 	return meta.trim() + '\n\n' + content.trim();
 }
