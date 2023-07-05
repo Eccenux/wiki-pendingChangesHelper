@@ -22,6 +22,14 @@
 			"priority": 0
 		},
 		{
+			"text": "wikiploy (release)",
+			"tooltip": "Run build and deploy as a gadget.",
+			"color": "lightgreen",
+			"commandType": "exec",
+			"command": "node wikiploy.js",
+			"priority": 0
+		},
+		{
 			"text": "npm i",
 			"tooltip": "Install modules, update package locks.",
 			"color": "lightgreen",
