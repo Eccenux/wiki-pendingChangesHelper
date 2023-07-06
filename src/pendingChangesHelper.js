@@ -36,8 +36,6 @@
 			];
 			for (const option of userOptions) {
 				let value = userConfig.get(option);
-				// TODO: remove
-				console.warn({option, value});
 				this.options[option] = value;
 			}
 		},

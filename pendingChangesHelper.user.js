@@ -39,7 +39,12 @@ class UserConfig {
 
 	/** Get user option. */
 	get(option) {
-		this.gConfig.get(this.configKey, option);
+		let value = this.gConfig.get(this.configKey, option);
+		// bool is mapped to '' or '1' (at least on FF)
+		if (option.startsWith('skip')) {
+			value = value == '1';
+		}
+		return value;
 	}
 
 	/** @private Load i18n for mw.msg. */
@@ -124,8 +129,6 @@ class UserConfig {
 			];
 			for (const option of userOptions) {
 				let value = userConfig.get(option);
-				// TODO: remove
-				console.warn({option, value});
 				this.options[option] = value;
 			}
 		},
