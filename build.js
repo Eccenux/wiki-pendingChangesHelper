@@ -60,7 +60,8 @@ function prepareGadget (monkeyJs) {
 export async function build_js() {
 	const buildConf = [
 		'contain.header.md',
-		'pendingChangesHelper.user.js',
+		'UserConfig.js',
+		'pendingChangesHelper.js',
 		'init.common.js',
 		'contain.footer.md',
 	];

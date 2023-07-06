@@ -4,5 +4,6 @@
 		"pendingChangesHelper.meta.js": true,
 		"pendingChangesHelper.mw.js": true,
 		"pendingChangesHelper.user.js": true,
-	}
+	},
+	"editor.useTabStops": true
 }
