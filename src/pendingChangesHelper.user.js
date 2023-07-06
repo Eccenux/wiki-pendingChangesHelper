@@ -1,20 +1,6 @@
-﻿// ==UserScript==
-// @name         Wiki Pending Changes Helper
-// @namespace    pl.enux.wiki
-// @version      {version}
-// @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]], [[MediaWiki:Gadget-pendingChangesHelper.js]].
-// @author       Nux; Beau; Matma Rex
-// @match        https://pl.wikipedia.org/*
-// @grant        none
-// @source       https://github.com/Eccenux/wiki-pendingChangesHelper/
-// @updateURL    https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.meta.js
-// @downloadURL  https://github.com/Eccenux/wiki-pendingChangesHelper/raw/master/pendingChangesHelper.user.js
-// ==/UserScript==
-
-// eslint-disable-next-line no-unused-vars
-function pendingChangesHelperWrapper (mw) {
-	// wrapper start
-
+﻿	/**
+	 * Main object
+	 */
 	let pendingChangesHelper = {
 		/** @readonly */
 		version: '{version}',
@@ -507,18 +493,3 @@ function pendingChangesHelperWrapper (mw) {
 			return item.classList.contains('visited');
 		},
 	};
-
-	// usage: mw.hook('userjs.pendingChangesHelper.beforeInit').add(function (pch) {});
-	mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
-
-	if (document.readyState === 'loading') {
-		document.addEventListener("DOMContentLoaded", function() {
-			pendingChangesHelper.init();
-		});
-	} else {
-		pendingChangesHelper.init();
-	}
-
-	// wrapper end
-}
-

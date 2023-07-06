@@ -58,10 +58,26 @@ function prepareGadget (monkeyJs) {
 
 /** Prepare all JS files. */
 export async function build_js() {
-	let srcJs = 'src/pendingChangesHelper.user.js';
+	const buildConf = [
+		'contain.header.md',
+		'pendingChangesHelper.user.js',
+		'init.common.js',
+		'contain.footer.md',
+	];
+
+	// merge main JS
+	let rawJs = '';
+	for (let i = 0; i < buildConf.length; i++) {
+		const file = buildConf[i];
+		let content = await fsa.readFile(`src/${file}`, 'utf8');
+		// remove BOM
+		if (content.charCodeAt(0) === 0xFEFF) {
+			content = content.substring(1);
+		}
+		rawJs += content + '\n';
+	}
 
 	// prepare main monkey
-	const rawJs = await fsa.readFile(srcJs, 'utf8');
 	let version = await readVersion('package.json');
 	if (typeof version != 'string') {
 		console.error('version not found');

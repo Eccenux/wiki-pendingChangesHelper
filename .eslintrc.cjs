@@ -8,6 +8,7 @@ module.exports = {
     "$": true,
     "mw": true,
     "pendingChangesHelperWrapper": true,
+    "pendingChangesHelper": true,
   },
   "extends": "eslint:recommended",
   "parserOptions": {

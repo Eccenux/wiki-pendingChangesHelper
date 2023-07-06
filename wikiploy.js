@@ -10,7 +10,7 @@ const ployBot = new Wikiploy();
 	let version = await readVersion('package.json');
 	// custom summary
 	ployBot.summary = () => {
-		return `v${version}: Recentchanges support`;
+		return `v${version}: gConfig support`;
 	}
 
 	await build_js();

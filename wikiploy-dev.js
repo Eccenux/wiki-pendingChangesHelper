@@ -10,14 +10,14 @@ const ployBot = new Wikiploy();
 	let version = await readVersion('package.json');
 	// custom summary
 	ployBot.summary = () => {
-		return `v${version}: Recentchanges support`;
+		return `v${version}: gConfig support`;
 	}
 
 	await build_js();
 
 	const configs = [];
 	configs.push(new DeployConfig({
-		src: 'pendingChangesHelper.user.js',
+		src: 'pendingChangesHelper.mw.js',
 	}));
 	await ployBot.deploy(configs);
 })().catch(err => {
