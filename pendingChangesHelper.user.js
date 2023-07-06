@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      5.4.0
+// @version      5.4.1
 // @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]], [[MediaWiki:Gadget-pendingChangesHelper.js]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
@@ -21,16 +21,25 @@ function pendingChangesHelperWrapper (mw) {
 class UserConfig {
 	constructor(gConfig) {
 		this.gConfig = gConfig;
+		/** gConfig key/tag. */
+		this.configKey = 'PendingChangesHelper';
+		/** Base info. */
 		this.gadgetInfo = {
 			name: 'Pending Changes Helper',
 			descriptionPage: 'Wikipedia:Narzędzia/Pending Changes Helper' 
 		};
+		/** Special pages that have a skip option. */
 		this.skipPages = [
 			'Newpages',
 			'Watchlist',
 			'Contributions',
 			'Recentchanges',
 		];
+	}
+
+	/** Get user option. */
+	get(option) {
+		this.gConfig.get(this.configKey, option);
 	}
 
 	/** @private Load i18n for mw.msg. */
@@ -73,7 +82,7 @@ class UserConfig {
 		}
 
 		// https://pl.wikipedia.org/wiki/MediaWiki:Gadget-gConfig.js#L-147
-		this.gConfig.register('PendingChangesHelper', this.gadgetInfo, options);
+		this.gConfig.register(this.configKey, this.gadgetInfo, options);
 	}
 }
 
@@ -82,7 +91,7 @@ class UserConfig {
 	 */
 	let pendingChangesHelper = {
 		/** @readonly */
-		version: '5.4.0',
+		version: '5.4.1',
 		/** Configurable by users. */
 		options: {
 			limit: 5,
@@ -100,9 +109,35 @@ class UserConfig {
 		specialPage: '',
 
 		/**
-		 * Main init.
+		 * Prepare options from user config.
+		 * @param {UserConfig} userConfig 
 		 */
-		init: function () {
+		prepareConfig: async function (userConfig) {
+			await userConfig.register();
+
+			const userOptions = [
+				'limit',
+				'skipNewpages',
+				'skipWatchlist',
+				'skipContributions',
+				'skipRecentchanges',
+			];
+			for (const option of userOptions) {
+				let value = userConfig.get(option);
+				// TODO: remove
+				console.warn({option, value});
+				this.options[option] = value;
+			}
+		},
+
+		/**
+		 * Main init.
+		 * 
+		 * @param {UserConfig} userConfig 
+		 */
+		init: async function (userConfig) {
+			await this.prepareConfig(userConfig);
+
 			var specialPage = mw.config.get('wgCanonicalSpecialPageName');
 			//console.log('[pendingChangesHelper]', 'init:', specialPage);
 			if (!specialPage) {
@@ -580,8 +615,7 @@ mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
 mw.loader.using('ext.gadget.gConfig', function(){ 
 	// gConfig
 	let userConfig = new UserConfig(gConfig);
-	userConfig.register();
-
+	
 	// init on-ready
 	if (document.readyState === 'loading') {
 		document.addEventListener("DOMContentLoaded", function() {

@@ -1,6 +1,6 @@
 {
   "name": "wiki-pendingchangeshelper",
-  "version": "5.4.0",
+  "version": "5.4.1",
   "description": "Wiki Pending Changes Helper",
   "main": "pendingChangesHelper.user.js",
   "type": "module",

@@ -21,9 +21,35 @@
 		specialPage: '',
 
 		/**
-		 * Main init.
+		 * Prepare options from user config.
+		 * @param {UserConfig} userConfig 
 		 */
-		init: function () {
+		prepareConfig: async function (userConfig) {
+			await userConfig.register();
+
+			const userOptions = [
+				'limit',
+				'skipNewpages',
+				'skipWatchlist',
+				'skipContributions',
+				'skipRecentchanges',
+			];
+			for (const option of userOptions) {
+				let value = userConfig.get(option);
+				// TODO: remove
+				console.warn({option, value});
+				this.options[option] = value;
+			}
+		},
+
+		/**
+		 * Main init.
+		 * 
+		 * @param {UserConfig} userConfig 
+		 */
+		init: async function (userConfig) {
+			await this.prepareConfig(userConfig);
+
 			var specialPage = mw.config.get('wgCanonicalSpecialPageName');
 			//console.log('[pendingChangesHelper]', 'init:', specialPage);
 			if (!specialPage) {

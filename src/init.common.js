@@ -5,8 +5,7 @@ mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
 mw.loader.using('ext.gadget.gConfig', function(){ 
 	// gConfig
 	let userConfig = new UserConfig(gConfig);
-	userConfig.register();
-
+	
 	// init on-ready
 	if (document.readyState === 'loading') {
 		document.addEventListener("DOMContentLoaded", function() {
