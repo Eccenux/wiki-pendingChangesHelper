@@ -1,6 +1,7 @@
 ﻿	/**
 	 * Main object
 	 */
+	// eslint-disable-next-line no-unused-vars
 	let pendingChangesHelper = {
 		/** @readonly */
 		version: '{version}',

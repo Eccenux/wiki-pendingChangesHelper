@@ -1,5 +1,5 @@
 // @name         Wiki Pending Changes Helper
-// @version      5.4.1
+// @version      5.5.0
 // @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]], [[MediaWiki:Gadget-pendingChangesHelper.js]].
 // @author       Nux; Beau; Matma Rex
 // @source       https://github.com/Eccenux/wiki-pendingChangesHelper/
@@ -87,9 +87,10 @@ class UserConfig {
 	/**
 	 * Main object
 	 */
+	// eslint-disable-next-line no-unused-vars
 	let pendingChangesHelper = {
 		/** @readonly */
-		version: '5.4.1',
+		version: '5.5.0',
 		/** Configurable by users. */
 		options: {
 			limit: 5,
@@ -607,8 +608,21 @@ class UserConfig {
 // usage: mw.hook('userjs.pendingChangesHelper.beforeInit').add(function (pch) {});
 mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
 
+// dev mode
+var devMode = false;
+if (mw.config.get('wgUserName') === 'Nux') {
+	devMode = true;
+}
+
 // deps
-mw.loader.using('ext.gadget.gConfig', function(){ 
+/* global importScript, importStylesheet */
+if (devMode || typeof gConfig !== 'object') {
+	console.log('[pendingChangesHelper]', 'load: Wikipedysta:Nux/gConfig.js');
+	importScript('Wikipedysta:Nux/gConfig.js');
+	importStylesheet('Wikipedysta:Nux/gConfig.css');
+}
+
+mw.hook('userjs.gConfig.ready').add(function (gConfig) {
 	// gConfig
 	let userConfig = new UserConfig(gConfig);
 	
