@@ -610,14 +610,14 @@ mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
 
 // dev mode
 var devMode = false;
-if (mw.config.get('wgUserName') === 'Nux') {
-	devMode = true;
-}
+// if (mw.config.get('wgUserName') === 'Nux') {
+// 	devMode = true;
+// }
 
 // deps
 /* global importScript, importStylesheet */
 if (devMode || typeof gConfig !== 'object') {
-	console.log('[pendingChangesHelper]', 'load: Wikipedysta:Nux/gConfig.js');
+	console.warn('[pendingChangesHelper]', 'load: Wikipedysta:Nux/gConfig.js');
 	importScript('Wikipedysta:Nux/gConfig.js');
 	importStylesheet('Wikipedysta:Nux/gConfig.css');
 }

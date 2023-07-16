@@ -1,10 +1,11 @@
 /**
  * Deploy as a gadget.
  */
-import { DeployConfig, Wikiploy } from 'wikiploy';
+import { DeployConfig, WikiployLite } from 'wikiploy';
 import { build_js, readVersion } from './build.js';
 
-const ployBot = new Wikiploy();
+import * as botpass from './bot.config.mjs';
+const ployBot = new WikiployLite(botpass);
 
 (async () => {
 	let version = await readVersion('package.json');

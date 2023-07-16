@@ -1,3 +1,4 @@
-/node_modules
-/*.lnk
+node_modules
+*.lnk
 temp.js
+bot.config.mjs
