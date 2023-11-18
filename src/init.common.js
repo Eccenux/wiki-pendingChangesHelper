@@ -15,7 +15,14 @@ if (devMode || typeof gConfig !== 'object') {
 	importStylesheet('Wikipedysta:Nux/gConfig.css');
 }
 
+pendingChangesHelper._initDone = false;
 mw.hook('userjs.gConfig.ready').add(function (gConfig) {
+	// avoid double init
+	if (pendingChangesHelper._initDone) {
+		return;
+	}
+	pendingChangesHelper._initDone = true;
+
 	// gConfig
 	let userConfig = new UserConfig(gConfig);
 	
