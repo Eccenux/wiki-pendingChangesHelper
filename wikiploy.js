@@ -1,9 +1,8 @@
 /**
  * Deploy as a gadget.
  */
-import { DeployConfig, WikiployLite } from 'wikiploy';
+import { DeployConfig, WikiployLite, setupSummary } from 'wikiploy';
 import { build_run, readVersion } from './build.js';
-import { setupSummary } from './wikiploy-common.js';
 
 import * as botpass from './bot.config.mjs';
 const ployBot = new WikiployLite(botpass);
