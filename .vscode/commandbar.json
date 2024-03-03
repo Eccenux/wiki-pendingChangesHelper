@@ -6,11 +6,11 @@
 	"skipErrorMessage": true,
 	"commands": [
 		{
-			"text": "build.js",
+			"text": "build",
 			"tooltip": "Run the build script.",
 			"color": "lightgreen",
 			"commandType": "exec",
-			"command": "node build.js",
+			"command": "node build.run.js",
 			"priority": 0
 		},
 		{
