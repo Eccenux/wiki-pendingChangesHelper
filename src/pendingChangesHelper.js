@@ -14,8 +14,11 @@
 			skipRecentchanges: false,
 
 			openCaption: 'Otwórz pierwsze $number stron do przejrzenia',
+			openCaption1: 'Otwórz pierwszą stronę do przejrzenia',
 			openUnwatchedCaption: 'Pierwsze $number czerwonych (nieobserwowanych)',
+			openUnwatchedCaption1: 'Pierwszą czerwoną (nieobserwowaną)',
 			openUnreviewedCaption: 'Pierwsze $number nowych artykułów',
+			openUnreviewedCaption1: 'Pierwszy nowy artykuł',
 			allDoneInfo: 'Koniec 😎',
 		},
 		/** @private */
@@ -39,6 +42,16 @@
 				let value = userConfig.get(option);
 				this.options[option] = value;
 			}
+
+			// assuming mobile is not able to open many tabs
+			if (this.isMobile()) {
+				this.options.limit = 1;
+			}
+		},
+
+		/** @private is mobile browser. */
+		isMobile: function() {
+			return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 		},
 
 		/**
@@ -125,7 +138,7 @@
 				return false;
 			};
 
-			var caption = this.options.openCaption.replace('$number', this.options.limit);
+			var caption = this.options.limit == 1 ? this.options.openCaption1 : this.options.openCaption.replace('$number', this.options.limit);
 
 			this.createPortletButton(caption, 'portlet-open-ten-pages', callback);
 			this.createButton(caption, container, callback);
@@ -177,7 +190,7 @@
 				return false;
 			};
 
-			var caption = this.options.openUnwatchedCaption.replace('$number', this.options.limit);
+			var caption = this.options.limit == 1 ? this.options.openUnwatchedCaption1 : this.options.openUnwatchedCaption.replace('$number', this.options.limit);
 
 			this.createButton(caption, list, callback);
 		},
@@ -192,7 +205,7 @@
 				return false;
 			};
 
-			var caption = this.options.openUnreviewedCaption.replace('$number', this.options.limit);
+			var caption = this.options.limit == 1 ? this.options.openUnreviewedCaption1 : this.options.openUnreviewedCaption.replace('$number', this.options.limit);
 
 			this.createButton(caption, list, callback);
 		},
