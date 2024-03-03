@@ -100,10 +100,9 @@ export async function build_js() {
 	return true;
 }
 
-/**/
-(async () => {
+/** Full build (with timer). */
+export async function build_run() {
 	console.log(new Date().toISOString(), 'start');
 	await build_js();
 	console.log(new Date().toISOString(), 'done');
-})();
-/**/
+}

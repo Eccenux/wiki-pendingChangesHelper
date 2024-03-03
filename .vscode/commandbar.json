@@ -14,27 +14,31 @@
 			"priority": 0
 		},
 		{
-			"text": "wikiploy-dev",
-			"tooltip": "Run build and deploy for staging.",
+			"text": "build & deploy-dev",
+			"tooltip": "Build and deploy for staging.",
 			"color": "lightgreen",
+			// seem to be slower...
+			// "commandType": "palette",
+			// "command": "workbench.action.tasks.runTask|Run dev rollout",
 			"commandType": "exec",
 			"command": "node wikiploy-dev.js",
 			"priority": 0
 		},
 		{
-			"text": "wikiploy (release)",
-			"tooltip": "Run build and deploy as a gadget.",
-			"color": "lightgreen",
-			"commandType": "exec",
-			"command": "node wikiploy.js",
+			"text": "build & deploy-RELEASE",
+			"tooltip": "Build and deploy as a gadget.",
+			"color": "#ffbb99",
+			// running as a task is required for interaction
+			"commandType": "palette",
+			"command": "workbench.action.tasks.runTask|Run rollout",
 			"priority": 0
 		},
 		{
 			"text": "npm i",
 			"tooltip": "Install modules, update package locks.",
 			"color": "lightgreen",
-			"commandType": "exec",
-			"command": "npm i",
+			"commandType": "palette",
+			"command": "workbench.action.tasks.runTask|npm - install",
 			"priority": 0
 		}
 	]

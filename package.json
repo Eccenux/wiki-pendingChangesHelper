@@ -5,8 +5,10 @@
   "main": "pendingChangesHelper.user.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+	"build": "node build.run.js",
+	"rollout-dev": "node wikiploy-dev.js",
+	"rollout": "node wikiploy.js"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Eccenux/wiki-pendingChangesHelper.git"

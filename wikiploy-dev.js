@@ -2,7 +2,7 @@
  * Dev/staging deploy.
  */
 import { DeployConfig, WikiployLite } from 'wikiploy';
-import { build_js, readVersion } from './build.js';
+import { build_run, readVersion } from './build.js';
 
 import * as botpass from './bot.config.mjs';
 const ployBot = new WikiployLite(botpass);
@@ -11,10 +11,10 @@ const ployBot = new WikiployLite(botpass);
 	let version = await readVersion('package.json');
 	// custom summary
 	ployBot.summary = () => {
-		return `v${version}: new gConfig`;
+		return `v${version}: changes from Github`;
 	}
 
-	await build_js();
+	await build_run();
 
 	const configs = [];
 	configs.push(new DeployConfig({

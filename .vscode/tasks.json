@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "rollout-dev",
+			"group": "none",
+			"problemMatcher": [],
+			"label": "Run dev rollout",
+			"detail": "Run rollout script (browserify & wikiploy)"
+		},
+		{
+			"type": "npm",
+			"script": "rollout",
+			"group": "none",
+			"problemMatcher": [],
+			"label": "Run rollout",
+			"detail": "Run rollout script (browserify & wikiploy)"
+		},
+		{
+			"label": "npm - install",
+			"type": "npm",
+			"script": "install",
+			"group": "none",
+			"problemMatcher": [],
+			"detail": "install dependencies from package"
+		}
+	]
+}

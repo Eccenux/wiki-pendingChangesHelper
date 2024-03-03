@@ -2,21 +2,25 @@
  * Deploy as a gadget.
  */
 import { DeployConfig, WikiployLite } from 'wikiploy';
-import { build_js, readVersion } from './build.js';
+import { build_run, readVersion } from './build.js';
+import { setupSummary } from './wikiploy-common.js';
 
 import * as botpass from './bot.config.mjs';
 const ployBot = new WikiployLite(botpass);
 
 (async () => {
-	let version = await readVersion('package.json');
-	// custom summary
-	ployBot.summary = () => {
-		return `v${version}: gConfig support`;
-	}
+	await build_run();
 
-	await build_js();
+	// custom summary from a prompt
+	let version = await readVersion('package.json');
+	await setupSummary(ployBot, version);
 
 	const configs = [];
+	// dev
+	configs.push(new DeployConfig({
+		src: 'pendingChangesHelper.mw.js',
+	}));
+	// release
 	configs.push(new DeployConfig({
 		src: 'pendingChangesHelper.mw.js',
 		dst: 'MediaWiki:Gadget-pendingChangesHelper.js',
