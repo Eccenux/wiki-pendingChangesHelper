@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Wiki Pending Changes Helper
 // @namespace    pl.enux.wiki
-// @version      5.6.0
+// @version      5.7.0
 // @description  Pomocnik do przeglądania strona na Wikipedii. Na pl.wiki: [[Wikipedia:Narzędzia/Pending Changes Helper]], [[MediaWiki:Gadget-pendingChangesHelper.js]].
 // @author       Nux; Beau; Matma Rex
 // @match        https://pl.wikipedia.org/*
@@ -97,7 +97,7 @@ class UserConfig {
 // eslint-disable-next-line no-unused-vars
 let pendingChangesHelper = {
 	/** @readonly */
-	version: '5.6.0',
+	version: '5.7.0',
 	/** Configurable by users. */
 	options: {
 		limit: 5,
@@ -191,13 +191,8 @@ let pendingChangesHelper = {
 	 * Create actions.
 	 */
 	createActions: function () {
-		var list;
-		if (this.specialPage != 'Watchlist') {
-			list = this.getList();
-		} else {
-			list = document.querySelector('.mw-changeslist ul');
-		}
-		if (!list) {
+		var postActionEl = this.getActionSibling();
+		if (!postActionEl) {
 			console.warn('[pendingChangesHelper]', 'list of changes not found');
 			return;
 		}
@@ -218,7 +213,7 @@ let pendingChangesHelper = {
 			}
 		}
 
-		list.parentNode.insertBefore(p, list);
+		postActionEl.insertAdjacentElement("beforebegin", p);
 	},
 	/**
 	 * Create main action button.
@@ -304,7 +299,7 @@ let pendingChangesHelper = {
 	},
 
 	/**
-	 * Selector for lists.
+	 * Selector for typical lists.
 	 * @param {String} subSelector Selector for list elelemnts (e.g. `li`).
 	 * @returns NodeList
 	 */
@@ -313,30 +308,38 @@ let pendingChangesHelper = {
 	},
 
 	/**
-	 * First list items container.
+	 * Get an element before which actions can be inserted.
 	 * 
-	 * Note! There might be more then one list.
-	 * New versions of MW seem to separate days on contributions page so many `ul` on a sinlge page.
-	 * 
-	 * Use `getListElements` instead.
+	 * This should be something that contain items (so that actions are inserted before items).
+	 * Note that:
+	 * <li>there might be multiple `ul` elements per list.
+	 * <li>codex version of PCh is `table` based, not `ul` based.
 	 * 
 	 * @return null when list was not found.
 	 */
-	getList: function () {
+	getActionSibling: function () {
+		if (this.specialPage === 'Watchlist') {
+			return document.querySelector('.mw-changeslist');
+		}
+		else if (this.specialPage === 'PendingChanges') {
+			return document.querySelector('.mw-fr-pending-changes-table');
+		}
+		let parentNode = false;
 		// try to get pager body (so that we don't get some other list; which was the case for `mw-logevent-loglines`, for blocked users)
-		let parentNode = document.querySelector('.mw-pager-body');
 		if (!parentNode) {
-			parentNode = document.querySelector('#mw-content-text');
+			parentNode = document.querySelector('.mw-pager-body');
 		}
 		// this should work for RC
 		if (!parentNode) {
 			parentNode = document.querySelector('.mw-changeslist');
 		}
-		let list = null;
-		if (parentNode) {
-			list = parentNode.querySelector('ul');
+		if (!parentNode) {
+			parentNode = document.querySelector('#mw-content-text');
 		}
-		return list;
+		if (parentNode) {
+			return parentNode;
+		}
+		return null;
 	},
 
 	/**
@@ -507,10 +510,11 @@ let pendingChangesHelper = {
 	 * Special:PendingChanges
 	 */
 	openPendingChanges: function () {
-		var listItems = this.getListElements('li');
-		if (!listItems.length) return;
+		// var listItems = this.getListElements('li');
+		var items = document.querySelectorAll('.mw-fr-pending-changes-table tr');
+		if (!items.length) return;
 
-		return this.openPendingItems(listItems);
+		return this.openPendingItems(items);
 	},
 
 	/**
@@ -529,10 +533,13 @@ let pendingChangesHelper = {
 			if (item.querySelectorAll('span.fr-under-review').length)
 				continue;
 
-			var links = item.getElementsByTagName('a');
-			if (links.length < 3) continue;
+			let link = item.querySelector('td>a[href*=diff]');
+			if (!link) {
+				console.warn('[pendingChangesHelper]', 'no link found in row:', item);
+				continue;
+			}
 
-			window.open(links[2].href);
+			window.open(link.href);
 			this.markAsVisited(item);
 
 			done++;
@@ -541,15 +548,17 @@ let pendingChangesHelper = {
 	},
 
 	hasUnwatchedPages: function () {
-		var listItems = this.getListElements('li.fr-unreviewed-unwatched');
-		if (!listItems.length) return false;
-		return listItems;
+		// var listItems = this.getListElements('li.fr-unreviewed-unwatched');
+		let items = document.querySelector('.fr-unreviewed-unwatched');
+		console.log('hasUnwatchedPages', items);
+		if (!items) return false;
+		return true;
 	},
 	/**
 	 * Special:PendingChanges - Unwatched
 	 */
 	openUnwatchedPages: function () {
-		var listItems = this.getListElements('li.fr-unreviewed-unwatched:not(.visited)');
+		var listItems = document.querySelectorAll('.fr-unreviewed-unwatched:not(.visited)');
 		if (!listItems.length) {
 			alert(this.options.allDoneInfo);
 			return;
