@@ -176,6 +176,8 @@ let pendingChangesHelper = {
 		console.log('[pendingChangesHelper]', 'prepare specialPage: ', specialPage);
 		this.createActions();
 
+		this.addCss();
+
 		// usage: mw.hook('userjs.pendingChangesHelper.afterInit').add(function (pch) {});
 		mw.hook('userjs.pendingChangesHelper.afterInit').fire(this);
 	},
@@ -625,7 +627,18 @@ let pendingChangesHelper = {
 	wasVisited: function (item) {
 		return item.classList.contains('visited');
 	},
+
+	addCss: function () {
+		document.head.insertAdjacentHTML("beforeend", `
+			<style>
+				html.skin-theme-clientpref-night .flaggedrevs-pending.visited {
+					background-color: #511806 !important;
+				}
+			</style>
+		`)
+	},
 };
+
 
 // usage: mw.hook('userjs.pendingChangesHelper.beforeInit').add(function (pch) {});
 mw.hook('userjs.pendingChangesHelper.beforeInit').fire(pendingChangesHelper);
