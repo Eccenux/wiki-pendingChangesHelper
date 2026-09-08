@@ -1,8 +1,7 @@
 module.exports = {
   "env": {
     "node": true,
-    "browser": true,
-    "es2020": true
+    "browser": true
   },
   "globals": {
     "$": true,
@@ -13,7 +12,7 @@ module.exports = {
   },
   "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaVersion": 11,
+    "ecmaVersion": 2019,
     "sourceType": "module"
   },
   "rules": {

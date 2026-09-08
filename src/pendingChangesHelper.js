@@ -317,7 +317,7 @@ let pendingChangesHelper = {
 			}
 			let id = item.querySelector('.mw-contributions-title').href;
 			//var oid = item.getAttribute('data-mw-revid');
-			let diff = item.querySelector('.mw-changeslist-diff')?.href;
+			let diff = item.querySelector('.mw-changeslist-diff'); diff = diff && diff.href;
 			// new page, first contribution
 			if (!diff) {
 				diff = false;
